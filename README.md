@@ -1,3 +1,3 @@
 # k6-performance-testing
 
-Performance test with Grafana K6
+Performance test with GRAFANA K6
