@@ -19,3 +19,9 @@ jobs:
         uses: grafana/run-k6-action@v1.1.3
         with:
           path: src/tests
+
+  # Exportar e mostrar as métricas de desempenho no console
+      - name: Display K6 Test Metrics
+        run: |
+          k6 run src/tests/test.js --summary-export=summary.json --out json=k6_output.json
+          cat k6_output.json | jq '.'  # Exibir as

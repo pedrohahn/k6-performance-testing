@@ -1,11 +1,12 @@
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 import http from 'k6/http';
 import { check } from 'k6';
 import { Trend, Rate } from 'k6/metrics';
 
 // Métricas
-export const getContactsDuration = new Trend('get_contacts_duration', true);
-export const getContactsFailedRate = new Rate('get_contacts_failed_rate');
+export const getMessage = new Trend('get_message_duration', true);
+export const getMessageFailed = new Rate('get_message_failed_rate');
 
 // Configurações de carga
 export const options = {
@@ -25,7 +26,8 @@ export const options = {
 // Geração de relatório
 export function handleSummary(data) {
   return {
-    './src/output/index.html': htmlReport(data)
+    './src/output/index.html': htmlReport(data),
+    stdout: textSummary(data, { indent: ' ', enableColors: true })
   };
 }
 
@@ -36,13 +38,13 @@ export default function () {
   const res = http.get(baseUrl);
 
   // Registrar duração da requisição
-  getContactsDuration.add(res.timings.duration);
+  getMessage.add(res.timings.duration);
 
   // Registrar taxa de falha com base no status
-  getContactsFailedRate.add(res.status !== 200);
+  getMessageFailed.add(res.status !== 200);
 
   // Verificar se a resposta está correta
   check(res, {
-    'get contacts - status 200': r => r.status === 200
+    'get message - status 200': r => r.status === 200
   });
 }
